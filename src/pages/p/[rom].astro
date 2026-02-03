@@ -1,0 +1,24 @@
+---
+import Emulator from '../../components/Emulator.astro'
+
+export function getStaticPaths() {
+  const games = fs.readdirSync('./public/roms')
+  const paths = []
+  games.forEach(game => {
+    paths.push({ params: { rom: game } })
+  })
+  console.log(paths)
+  return paths
+}
+
+const { rom } = Astro.params
+---
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+<head>
+<body>
+  <Emulator rom={rom}></Emulator>
+</body>
+</html>

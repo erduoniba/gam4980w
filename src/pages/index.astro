@@ -1,43 +1,14 @@
 ---
-
+const games = fs.readdirSync('./public/roms')
 ---
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <meta name="generator" content={Astro.generator} />
-  <title>伏魔记</title>
-</head>
+<head>
 <body>
-  <script>
-import { Nostalgist } from 'nostalgist'
-const nostalgist = await Nostalgist.launch({
-    core: 'gam4980',
-    rom: '伏魔记怀旧终曲v2.0(原版精修).gam',
-    resolveCoreJs(core) {
-        return `/cores/${core}_libretro.js`
-    },
-    resolveCoreWasm(core) {
-        return `/cores/${core}_libretro.wasm`
-    },
-    resolveRom(file) {
-        return `/roms/${file}`
-    },
-    retroarchCoreConfig: {
-        gam4980_cpu_rate: '2.00',
-        gam4980_timer_rate: '2.00',
-        gam4980_lcd_color: 'blue',
-    },
-    async beforeLaunch(self) {
-        const FS = self.getEmscriptenFS()
-        const bios8 = await fetch('/system/gam4980/8.BIN')
-        const biosE = await fetch('/system/gam4980/E.BIN')
-        const biosDir = '/home/web_user/retroarch/userdata/system/gam4980'
-        FS.mkdir(biosDir)
-        FS.writeFile(`${biosDir}/8.BIN`, await bios8.bytes())
-        FS.writeFile(`${biosDir}/E.BIN`, await biosE.bytes())
-    }
-})
-  </script>
+  <ul>
+    {games.map((game) => (<li><a href={`/p/${game}`}>{game}</a></li>))}
+  </ul>
 </body>
 </html>

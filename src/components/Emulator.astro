@@ -1,0 +1,42 @@
+---
+const { rom } = Astro.props
+---
+<x-emulator data-rom={rom}></x-emulator>
+
+<script>
+import { Nostalgist } from 'nostalgist'
+
+class Emulator extends HTMLElement {
+  async connectedCallback() {
+    const nostalgist = await Nostalgist.launch({
+      core: 'gam4980',
+      rom: this.dataset.rom,
+      resolveCoreJs(core) {
+        return `/cores/${core}_libretro.js`
+      },
+      resolveCoreWasm(core) {
+        return `/cores/${core}_libretro.wasm`
+      },
+      resolveRom(file) {
+        return `/roms/${file}`
+      },
+      retroarchCoreConfig: {
+        gam4980_cpu_rate: '2.00',
+        gam4980_timer_rate: '2.00',
+        gam4980_lcd_color: 'blue',
+      },
+      async beforeLaunch(self) {
+        const FS = self.getEmscriptenFS()
+        const bios8 = await fetch('/system/gam4980/8.BIN')
+        const biosE = await fetch('/system/gam4980/E.BIN')
+        const biosDir = '/home/web_user/retroarch/userdata/system/gam4980'
+        FS.mkdir(biosDir)
+        FS.writeFile(`${biosDir}/8.BIN`, await bios8.bytes())
+        FS.writeFile(`${biosDir}/E.BIN`, await biosE.bytes())
+      }
+    })
+  }
+}
+
+customElements.define('x-emulator', Emulator)
+</script>
